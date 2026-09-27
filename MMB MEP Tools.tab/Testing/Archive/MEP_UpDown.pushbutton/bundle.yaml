@@ -1,0 +1,6 @@
+title: MEP Up/Down
+tooltip: Modeless MEP level-offset tool for selected split elements.
+author: Govind Ranjith Kota
+min_revit_version: 2023
+engine:
+  persistent: true

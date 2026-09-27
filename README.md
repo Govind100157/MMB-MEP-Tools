@@ -1,2 +1,5 @@
-# MMB MEP Tools
-MMB MEP Tools is a custom Revit productivity add-in developed to enhance the efficiency, accuracy, and consistency of MEP modeling workflows. The toolset provides a collection of practical MEP modeling utilities designed to address common challenges faced by modelers when working in Revit's 3D environment. The plugin minimizes the need for frequent switching between plan, section, elevation, and 3D views by enabling modelers to perform key modeling tasks directly within the 3D view. This streamlined approach improves visualization, accelerates modeling activities, and enhances overall user productivity.
+## Copyright
+
+MMB MEP Tools © 2026 Govind Ranjith Kota
+
+All rights reserved. Internal use only.

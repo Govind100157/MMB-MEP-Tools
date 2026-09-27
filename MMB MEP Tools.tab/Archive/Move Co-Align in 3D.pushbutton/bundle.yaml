@@ -1,0 +1,8 @@
+title: Move Co-Align in 3D
+tooltip: >
+    Click on a destination MEP family/element, then on an MEP family/element
+    you'd like to move. Based on their two closest connectors, the second
+    element is ROTATED to match the destination's orientation (pivoting
+    about its own closest connector), then shifted perpendicular onto the
+    destination connector's centerline - aligning it in both plan view and
+    section view (same line/height as the destination). The second family/element is moved so that the two closest connectors meet, align and connect

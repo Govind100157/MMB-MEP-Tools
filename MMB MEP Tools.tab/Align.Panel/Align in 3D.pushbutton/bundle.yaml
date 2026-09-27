@@ -1,0 +1,3 @@
+title: Align in 3D
+tooltip: Run this command. Click on a destination MEP family/element, and then on an MEP family/element you'd like to move. Based on their two closest connectors, the second is aligned to the first in 3D space.
+developer: Govind

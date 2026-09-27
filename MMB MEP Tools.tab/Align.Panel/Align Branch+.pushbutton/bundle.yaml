@@ -1,0 +1,3 @@
+title: Align Branch +
+tooltip: click on Pipe/duct/cable tray main followed by a branch. This command will move the branch in whatever angle it shall be so it can logically intersect perpendicularly with the main when you use the trim or extend command. It will not change the slope or the angle of either pipe.
+developer: Govind

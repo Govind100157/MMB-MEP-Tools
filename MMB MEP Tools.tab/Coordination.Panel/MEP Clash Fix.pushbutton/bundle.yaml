@@ -1,0 +1,12 @@
+title: MEP Clash Fix
+
+tooltip: >-
+  Fix MEP clashes by offsetting selected ducts, pipes, cable trays or
+  conduits Up/Down Offset or Side Offset. User need to split the duct, pipes, cable trays or conduits at the desired points before proceeding.
+
+author: Govind Ranjith Kota
+
+min_revit_version: 2023
+
+engine:
+  persistent: true
