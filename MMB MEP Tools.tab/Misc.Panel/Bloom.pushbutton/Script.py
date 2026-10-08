@@ -25,7 +25,8 @@ from Autodesk.Revit.DB import (
     Level,
     Domain,
     ConnectorProfileType,
-    BuiltInCategory
+    BuiltInCategory,
+    ElementId
 )
 
 from Autodesk.Revit.DB.Mechanical import (
@@ -206,7 +207,20 @@ def get_category_int(elem):
 
     return None
 
+def is_category(elem, bic):
+    try:
+        if not elem:
+            return False
 
+        if not elem.Category:
+            return False
+
+        return elem.Category.Id == ElementId(bic)
+
+    except:
+        return False
+        
+        
 def make_category_set(names):
     result = set()
 
@@ -630,59 +644,149 @@ def connect_safely(source, target):
 
 def get_stub_kind(conn):
     """
-    Returns:
-    duct
-    pipe
-    cabletray
-    conduit
-    None
+    Determine which MEP curve must be created.
 
-    Important:
-    Cable tray and conduit share DomainCableTrayConduit.
-    So for that domain, we must check owner category.
+    HVAC:
+        Creates Duct
+
+    Piping:
+        Creates Pipe
+
+    CableTrayConduit:
+        Checks the actual owner/category because
+        Cable Tray and Conduit share the same domain.
     """
 
     try:
         owner = conn.Owner
-        cat = get_category_int(owner)
+
+        if not owner:
+            return None
+
+        # =================================================
+        # HVAC
+        # =================================================
 
         if conn.Domain == Domain.DomainHvac:
             return "duct"
 
+        # =================================================
+        # PIPING
+        # =================================================
+
         if conn.Domain == Domain.DomainPiping:
             return "pipe"
 
+        # =================================================
+        # CABLE TRAY / CONDUIT
+        # =================================================
+
         if conn.Domain == Domain.DomainCableTrayConduit:
 
-            if cat in CABLETRAY_CATEGORIES:
-                return "cabletray"
-
-            if cat in CONDUIT_CATEGORIES:
-                return "conduit"
+            # -------------------------------------------------
+            # 1. DIRECT CURVE CLASS CHECK
+            # -------------------------------------------------
 
             try:
-                cabletray_type = get_connected_curve_type_from_owner_connectors(
-                    conn,
-                    CableTray
-                )
-
-                if cabletray_type:
+                if isinstance(owner, CableTray):
                     return "cabletray"
             except:
                 pass
 
             try:
-                conduit_type = get_connected_curve_type_from_owner_connectors(
-                    conn,
-                    Conduit
-                )
-
-                if conduit_type:
+                if isinstance(owner, Conduit):
                     return "conduit"
             except:
                 pass
 
-            return "conduit"
+            # -------------------------------------------------
+            # 2. CABLE TRAY CATEGORY CHECK
+            # -------------------------------------------------
+
+            try:
+                if is_category(
+                    owner,
+                    BuiltInCategory.OST_CableTray
+                ):
+                    return "cabletray"
+            except:
+                pass
+
+            try:
+                if is_category(
+                    owner,
+                    BuiltInCategory.OST_CableTrayFitting
+                ):
+                    return "cabletray"
+            except:
+                pass
+
+            # -------------------------------------------------
+            # 3. CONDUIT CATEGORY CHECK
+            # -------------------------------------------------
+
+            try:
+                if is_category(
+                    owner,
+                    BuiltInCategory.OST_Conduit
+                ):
+                    return "conduit"
+            except:
+                pass
+
+            try:
+                if is_category(
+                    owner,
+                    BuiltInCategory.OST_ConduitFitting
+                ):
+                    return "conduit"
+            except:
+                pass
+
+            # -------------------------------------------------
+            # 4. CONNECTED CABLE TRAY CHECK
+            # -------------------------------------------------
+
+            try:
+                cabletray_type = (
+                    get_connected_curve_type_from_owner_connectors(
+                        conn,
+                        CableTray
+                    )
+                )
+
+                if cabletray_type:
+                    return "cabletray"
+
+            except:
+                pass
+
+            # -------------------------------------------------
+            # 5. CONNECTED CONDUIT CHECK
+            # -------------------------------------------------
+
+            try:
+                conduit_type = (
+                    get_connected_curve_type_from_owner_connectors(
+                        conn,
+                        Conduit
+                    )
+                )
+
+                if conduit_type:
+                    return "conduit"
+
+            except:
+                pass
+
+            # -------------------------------------------------
+            # 6. UNKNOWN
+            #
+            # IMPORTANT:
+            # Never automatically assume Conduit.
+            # -------------------------------------------------
+
+            return None
 
     except:
         pass
